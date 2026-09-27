@@ -1,0 +1,35 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: library
+      MYSQL_USER: library
+      MYSQL_PASSWORD: ${DB_PASSWORD:-library}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-local-root-change-me}
+    volumes:
+      - library-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-local-root-change-me}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  backend:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/library?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: library
+      DB_PASSWORD: ${DB_PASSWORD:-library}
+      JWT_SECRET: ${JWT_SECRET:-local-development-secret-change-this-to-a-long-random-value-123456789}
+      CORS_ORIGIN: http://localhost:5173
+      DEMO_LIBRARIAN_EMAIL: ${DEMO_LIBRARIAN_EMAIL:-admin@library.com}
+      DEMO_LIBRARIAN_PASSWORD: ${DEMO_LIBRARIAN_PASSWORD:-}
+      DEMO_MEMBER_PASSWORD: ${DEMO_MEMBER_PASSWORD:-}
+    depends_on:
+      mysql: { condition: service_healthy }
+    ports: ["8080:8080"]
+  frontend:
+    build: ./frontend
+    depends_on: [backend]
+    ports: ["5173:80"]
+volumes:
+  library-data:

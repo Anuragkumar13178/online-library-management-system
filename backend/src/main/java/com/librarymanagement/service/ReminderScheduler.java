@@ -1,0 +1,7 @@
+package com.librarymanagement.service;
+import com.librarymanagement.entity.*;import com.librarymanagement.repository.*;import org.springframework.scheduling.annotation.Scheduled;import org.springframework.stereotype.Component;import java.time.LocalDate;
+@Component public class ReminderScheduler{
+ private final LoanRepository loans;private final NotificationPreferenceRepository prefs;private final LibraryNotificationRepository notes;private final LibraryService service;
+ public ReminderScheduler(LoanRepository l,NotificationPreferenceRepository p,LibraryNotificationRepository n,LibraryService s){loans=l;prefs=p;notes=n;service=s;}
+ @Scheduled(cron="0 0 9 * * *") public void sendReminders(){LocalDate today=LocalDate.now();for(Loan loan:loans.findAllByOrderByBorrowDateDesc()){if(loan.getReturnDate()!=null)continue;boolean overdue=loan.getDueDate().isBefore(today);boolean dueSoon=!overdue&&loan.getDueDate().equals(today.plusDays(2));if(!overdue&&!dueSoon)continue;String type=overdue?"OVERDUE":"DUE_DATE";var pref=prefs.findByMemberId(loan.getMember().getId()).orElse(null);if(pref==null||(overdue&&!pref.isOverdueAlerts())||(dueSoon&&!pref.isDueDateAlerts()))continue;String message="\""+loan.getBook().getTitle()+"\" is "+(overdue?"overdue":"due on "+loan.getDueDate())+".";if(!notes.existsByRecipientIdAndTypeAndMessage(loan.getMember().getId(),type,message))service.createNotification(loan.getMember(),overdue?"Book overdue":"Book due soon",message,type);}}
+}

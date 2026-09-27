@@ -1,0 +1,13 @@
+.env
+.idea/
+.vscode/
+target/
+.tools/
+.run/
+.pnpm-store/
+backend/data/
+node_modules/
+frontend/.pnpm-store/
+dist/
+*.log
+*.tsbuildinfo
