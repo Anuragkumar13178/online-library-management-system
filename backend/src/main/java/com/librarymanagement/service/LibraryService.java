@@ -173,7 +173,7 @@ public class LibraryService {
                 createNotification(
                         member,
                         "Book borrowed",
-                        "You borrowed "" + b.getTitle() + "". Due date: " + l.getDueDate() + ".",
+                        "You borrowed \\\"" + b.getTitle() + "\\\". Due date: " + l.getDueDate() + ".",
                         "DUE_DATE"
                 );
             }
