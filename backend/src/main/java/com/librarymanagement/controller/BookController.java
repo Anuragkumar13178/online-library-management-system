@@ -2,7 +2,7 @@ package com.librarymanagement.controller;
 
 import com.librarymanagement.dto.ApiDtos.BookInput;
 import com.librarymanagement.entity.Book;
-import com.librarymanagement.repository.BookRepository;
+import com.librarymanagement.repository.BookRepository;import com.librarymanagement.repository.SearchHistoryRepository;import com.librarymanagement.entity.User;
 import com.librarymanagement.service.LibraryService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.*;
