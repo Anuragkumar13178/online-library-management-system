@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Core application service for the campus library.
@@ -18,6 +19,7 @@ import java.util.*;
  */
 @Service
 public class LibraryService {
+    private static final ConcurrentHashMap<Long, Object> BOOK_LOCKS = new ConcurrentHashMap<>();
     private final UserRepository users;
     private final BookRepository books;
     private final LoanRepository loans;
@@ -157,7 +159,7 @@ public class LibraryService {
         }
 
         Book b;
-        synchronized (("BOOK-" + bookId).intern()) {
+        synchronized (BOOK_LOCKS.computeIfAbsent(bookId, id -> new Object())) {
             b = books.lockById(bookId)
                     .orElseThrow(() -> new NoSuchElementException("Book not found."));
             b.decrementAvailable();
