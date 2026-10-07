@@ -52,6 +52,7 @@ public class LibraryService {
                 "id", u.getId(),
                 "name", u.getName(),
                 "email", u.getEmail(),
+                "membershipId", u.getMembershipId(),
                 "role", u.getRole().name(),
                 "phone", u.getPhone() == null ? "" : u.getPhone(),
                 "accountStatus", u.getAccountStatus().name(),
